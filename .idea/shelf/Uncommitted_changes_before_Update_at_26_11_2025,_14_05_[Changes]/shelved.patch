@@ -1,0 +1,29 @@
+Index: app/(tabs)/index.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import { Image } from \"expo-image\";\nimport { Platform, StyleSheet } from \"react-native\";\n\nimport { HelloWave } from \"@/components/hello-wave\";\nimport ParallaxScrollView from \"@/components/parallax-scroll-view\";\nimport { ThemedText } from \"@/components/themed-text\";\nimport { ThemedView } from \"@/components/themed-view\";\nimport { Link } from \"expo-router\";\n\nexport default function HomeScreen() {\n  return (\n    <ParallaxScrollView\n      headerBackgroundColor={{ light: \"#A1CEDC\", dark: \"#1D3D47\" }}\n      headerImage={\n        <Image\n          source={require(\"@/assets/images/partial-react-logo.png\")}\n          style={styles.reactLogo}\n        />\n      }\n    >\n      <ThemedView style={styles.titleContainer}>\n        <ThemedText type=\"title\">Welcomeeee!</ThemedText>\n        <HelloWave />\n      </ThemedView>\n      <ThemedView style={styles.stepContainer}>\n        <ThemedText type=\"subtitle\">Step 1: Try it</ThemedText>\n        <ThemedText>\n          Edit{\" \"}\n          <ThemedText type=\"defaultSemiBold\">app/(tabs)/index.tsx</ThemedText>{\" \"}\n          to see changes. Press{\" \"}\n          <ThemedText type=\"defaultSemiBold\">\n            {Platform.select({\n              ios: \"cmd + d\",\n              android: \"cmd + m\",\n              web: \"F12\",\n            })}\n          </ThemedText>{\" \"}\n          to open developer tools.\n        </ThemedText>\n      </ThemedView>\n      <ThemedView style={styles.stepContainer}>\n        <Link href=\"/modal\">\n          <Link.Trigger>\n            <ThemedText type=\"subtitle\">Step 2: Explore</ThemedText>\n          </Link.Trigger>\n          <Link.Preview />\n          <Link.Menu>\n            <Link.MenuAction\n              title=\"Action\"\n              icon=\"cube\"\n              onPress={() => alert(\"Action pressed\")}\n            />\n            <Link.MenuAction\n              title=\"Share\"\n              icon=\"square.and.arrow.up\"\n              onPress={() => alert(\"Share pressed\")}\n            />\n            <Link.Menu title=\"More\" icon=\"ellipsis\">\n              <Link.MenuAction\n                title=\"Delete\"\n                icon=\"trash\"\n                destructive\n                onPress={() => alert(\"Delete pressed\")}\n              />\n            </Link.Menu>\n          </Link.Menu>\n        </Link>\n\n        <ThemedText>\n          {`Tap the Explore tab to learn more about what's included in this starter app.`}\n        </ThemedText>\n      </ThemedView>\n      <ThemedView style={styles.stepContainer}>\n        <ThemedText type=\"subtitle\">Step 3: Get a fresh start</ThemedText>\n        <ThemedText>\n          {`When you're ready, run `}\n          <ThemedText type=\"defaultSemiBold\">\n            npm run reset-project\n          </ThemedText>{\" \"}\n          to get a fresh <ThemedText type=\"defaultSemiBold\">app</ThemedText>{\" \"}\n          directory. This will move the current{\" \"}\n          <ThemedText type=\"defaultSemiBold\">app</ThemedText> to{\" \"}\n          <ThemedText type=\"defaultSemiBold\">app-example</ThemedText>.\n        </ThemedText>\n      </ThemedView>\n    </ParallaxScrollView>\n  );\n}\n\nconst styles = StyleSheet.create({\n  titleContainer: {\n    flexDirection: \"row\",\n    alignItems: \"center\",\n    gap: 8,\n  },\n  stepContainer: {\n    gap: 8,\n    marginBottom: 8,\n  },\n  reactLogo: {\n    height: 178,\n    width: 290,\n    bottom: 0,\n    left: 0,\n    position: \"absolute\",\n  },\n});\n
+===================================================================
+diff --git a/app/(tabs)/index.tsx b/app/(tabs)/index.tsx
+--- a/app/(tabs)/index.tsx	(revision 2da0c5212f25be7f5d0f0eb6bfdf2e00d8e353be)
++++ b/app/(tabs)/index.tsx	(date 1764156229872)
+@@ -10,16 +10,12 @@
+ export default function HomeScreen() {
+   return (
+     <ParallaxScrollView
+-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
+-      headerImage={
+-        <Image
+-          source={require("@/assets/images/partial-react-logo.png")}
+-          style={styles.reactLogo}
+-        />
+-      }
++      headerBackgroundColor={{ light: "#4f422e",dark:"#000" }}
++      headerImage=
++
+     >
+       <ThemedView style={styles.titleContainer}>
+-        <ThemedText type="title">Welcomeeee!</ThemedText>
++        <ThemedText type="title">Welcomeeee!</ThemedText>r
+         <HelloWave />
+       </ThemedView>
+       <ThemedView style={styles.stepContainer}>
