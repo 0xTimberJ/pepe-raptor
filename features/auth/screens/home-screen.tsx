@@ -33,7 +33,7 @@ export function HomeScreen() {
 
         <Pressable
           onPress={handleContinueAsGuest}
-          className="bg-blue-600 rounded-xl py-4 px-6 active:bg-blue-700"
+          className="bg-primary rounded-xl py-4 px-6 active:bg-primary/80"
         >
           <Text className="text-center text-white font-semibold text-lg">
             Continuer en tant que&nbsp;invité
