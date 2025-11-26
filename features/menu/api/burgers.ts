@@ -5,7 +5,7 @@ export interface Burger {
   name: string;
   price: number | null;
   description?: string;
-  image?: string; // Nom du fichier uploadé dans PocketBase
+  image?: string;
   created: string;
   updated: string;
 }
@@ -17,10 +17,6 @@ export function getImageUrl(record: Burger, filename: string): string {
   return pb.files.getURL(record, filename);
 }
 
-/**
- * Fetch all burgers from PocketBase
- * Collection name: 'burgers' (you'll need to create this in PocketBase)
- */
 export async function getBurgers(): Promise<Burger[]> {
   try {
     const records = await pb.collection("burgers").getFullList<Burger>({
