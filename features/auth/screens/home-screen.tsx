@@ -16,7 +16,7 @@ export function HomeScreen() {
   console.log(colorScheme);
 
   return (
-    <View className="flex flex-col flex-1 bg-background justify-center items-center px-6 gap-12">
+    <View className="flex flex-col flex-1 justify-center items-center px-6 gap-12">
       <Image
         source={require("@/assets/images/adaptive-icon.png")}
         style={{ width: 128, height: 128 }}
