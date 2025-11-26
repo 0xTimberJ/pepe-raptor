@@ -4,7 +4,6 @@ import { Pressable, Text, View } from "react-native";
 export function ThemeToggle() {
   const { colorScheme: currentScheme } = useColorScheme();
 
-  // Only show in development
   if (process.env.NODE_ENV === "production") return null;
 
   const toggleTheme = () => {
