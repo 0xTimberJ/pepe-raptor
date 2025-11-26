@@ -1,7 +1,9 @@
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";
-import { Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 
 export function HomeScreen() {
   const router = useRouter();
@@ -22,23 +24,13 @@ export function HomeScreen() {
       />
 
       <View className="w-full gap-4">
-        <Pressable
-          disabled
-          className="bg-gray-300 rounded-xl py-4 px-6 opacity-50"
-        >
-          <Text className="text-center text-gray-600 font-semibold text-lg">
-            Se connecter
-          </Text>
-        </Pressable>
+        <Button variant={"secondary"} onPress={handleContinueAsGuest}>
+          <Text>Se connecter</Text>
+        </Button>
 
-        <Pressable
-          onPress={handleContinueAsGuest}
-          className="bg-primary rounded-xl py-4 px-6 active:bg-primary/80"
-        >
-          <Text className="text-center text-white font-semibold text-lg">
-            Continuer en tant que&nbsp;invité
-          </Text>
-        </Pressable>
+        <Button onPress={handleContinueAsGuest}>
+          <Text>Continuer en tant que invité</Text>
+        </Button>
       </View>
     </View>
   );
