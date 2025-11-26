@@ -39,6 +39,14 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Modak-Regular.ttf"
+          ]
+        }
       ]
     ],
     "experiments": {
