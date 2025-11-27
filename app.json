@@ -43,9 +43,7 @@
       [
         "expo-font",
         {
-          "fonts": [
-            "./assets/fonts/Modak-Regular.ttf"
-          ]
+          "fonts": ["./assets/fonts/Modak-Regular.ttf"]
         }
       ]
     ],

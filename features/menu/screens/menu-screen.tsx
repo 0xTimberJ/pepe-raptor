@@ -1,9 +1,20 @@
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
-import { BurgerCard } from "../components/burger-card";
-import { useBurgers } from "../hooks/use-burgers";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { MenuSection } from "../components/menu-section";
+import { useMenu } from "../hooks/use-menu";
+import type { MenuSection as MenuSectionType } from "../types/menu-item";
 
 export function MenuScreen() {
-  const { burgers, loading, error, refetch } = useBurgers();
+  const {
+    burgers,
+    desserts,
+    drinks,
+    frites,
+    sauces,
+    snacks,
+    loading,
+    error,
+    refetch,
+  } = useMenu();
 
   if (loading) {
     return (
@@ -25,30 +36,49 @@ export function MenuScreen() {
     );
   }
 
+  const sections: MenuSectionType[] = [
+    { id: "burgers" as const, title: "Burgers", emoji: "🍔", items: burgers },
+    { id: "snacks" as const, title: "Snacks", emoji: "🍟", items: snacks },
+    { id: "frites" as const, title: "Frites", emoji: "🍟", items: frites },
+    { id: "sauce" as const, title: "Sauces", emoji: "🥫", items: sauces },
+    { id: "drinks" as const, title: "Boissons", emoji: "🥤", items: drinks },
+    {
+      id: "desserts" as const,
+      title: "Desserts",
+      emoji: "🍰",
+      items: desserts,
+    },
+  ].filter((section) => section.items.length > 0);
+
+  const hasAnyItems = sections.length > 0;
+
   return (
     <View className="flex-1 bg-gray-50">
       <View className="bg-white px-4 py-6 shadow-sm">
-        <Text className="text-3xl font-bold text-gray-900">Menu Burgers</Text>
+        <Text className="text-3xl font-bold text-gray-900">Menu</Text>
       </View>
 
-      <FlatList
-        data={burgers}
-        keyExtractor={(item) => item.id}
-        contentContainerClassName="p-4 gap-3"
-        renderItem={({ item }) => <BurgerCard burger={item} />}
-        ListEmptyComponent={
-          <View className="flex-1 justify-center items-center py-20 px-4">
-            <Text className="text-gray-400 text-6xl mb-4">🍔</Text>
-            <Text className="text-gray-600 text-lg font-semibold mb-2">
-              Aucun burger disponible
-            </Text>
-            <Text className="text-gray-500 text-sm text-center">
-              La base de données est vide.{"\n"}
-              Ajoute des burgers dans PocketBase pour les voir ici.
-            </Text>
-          </View>
-        }
-      />
+      {hasAnyItems ? (
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="py-4"
+          showsVerticalScrollIndicator={false}
+        >
+          {sections.map((section) => (
+            <MenuSection key={section.id} section={section} />
+          ))}
+        </ScrollView>
+      ) : (
+        <View className="flex-1 justify-center items-center py-20 px-4">
+          <Text className="text-gray-400 text-6xl mb-4">🍽️</Text>
+          <Text className="text-gray-600 text-lg font-semibold mb-2">
+            Menu vide
+          </Text>
+          <Text className="text-gray-500 text-sm text-center">
+            Aucun produit disponible.{"\n"}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

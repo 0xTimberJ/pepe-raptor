@@ -23,13 +23,18 @@ export function HomeScreen() {
         contentFit="contain"
       />
 
-      <View className="w-full gap-4">
-        <Button variant={"secondary"} onPress={handleContinueAsGuest}>
+      <View className="w-full gap-4 flex flex-col items-center">
+        <Button
+          variant={"secondary"}
+          onPress={handleContinueAsGuest}
+          className="min-w-60"
+          disabled
+        >
           <Text>Se connecter</Text>
         </Button>
 
-        <Button onPress={handleContinueAsGuest}>
-          <Text>Continuer en tant que invité</Text>
+        <Button onPress={handleContinueAsGuest} className="min-w-60">
+          <Text>Continuer en tant qu&apos;invité</Text>
         </Button>
       </View>
     </View>
