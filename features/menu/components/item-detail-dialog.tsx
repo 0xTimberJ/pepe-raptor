@@ -1,4 +1,4 @@
-import { Image, ScrollView, View } from "react-native";
+import { Image, ScrollView, View, Pressable } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import {
@@ -9,8 +9,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { pb } from "@/lib/pocketbase";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { MenuItem } from "../types/menu-item";
+import { useExtras } from "../hooks/use-extras";
+import type { Extra } from "../api/extras";
 
 interface ItemDetailDialogProps {
   item: MenuItem | null;
@@ -27,12 +29,39 @@ export function ItemDetailDialog({
   open,
   onOpenChange,
 }: ItemDetailDialogProps) {
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedExtras, setSelectedExtras] = useState<Extra[]>([]);
+  const { extras } = useExtras();
+
+  useEffect(() => {
+    if (open) {
+      setQuantity(1);
+      setSelectedExtras([]);
+    }
+  }, [open]);
 
   if (!item) return null;
 
+  const basePrice = item.price ?? 0;
+  const extrasTotal = selectedExtras.reduce((sum, e) => sum + e.price, 0);
+  const totalPrice = (basePrice + extrasTotal) * quantity;
+
+  const toggleExtra = (extra: Extra) => {
+    setSelectedExtras((prev) => {
+      const exists = prev.find((e) => e.id === extra.id);
+      if (exists) {
+        return prev.filter((e) => e.id !== extra.id);
+      }
+      return [...prev, extra];
+    });
+  };
+
+  const isExtraSelected = (extra: Extra) => {
+    return selectedExtras.some((e) => e.id === extra.id);
+  };
+
   const handleDecrease = () => {
-    setQuantity((prev) => Math.max(0, prev - 1));
+    setQuantity((prev) => Math.max(1, prev - 1));
   };
 
   const handleIncrease = () => {
@@ -40,10 +69,8 @@ export function ItemDetailDialog({
   };
 
   const handleAddToCart = () => {
-    // TODO: Add to cart logic
-    console.log("Add to cart:", item, quantity);
+    console.log("Add to cart:", { item, quantity, selectedExtras, totalPrice });
     onOpenChange(false);
-    setQuantity(0);
   };
 
   return (
@@ -69,11 +96,57 @@ export function ItemDetailDialog({
                 )}
               </DialogHeader>
 
-              <Text className="text-2xl font-bold text-blue-600">
-                {(item.price ?? 0).toFixed(2)} €
+              <Text className="text-lg font-semibold text-gray-600">
+                {basePrice.toFixed(2)} €
               </Text>
             </View>
           </View>
+
+          {extras.length > 0 && (
+            <View className="mb-4">
+              <Text className="text-base font-semibold text-gray-900 mb-2">
+                Extras
+              </Text>
+              <ScrollView 
+                style={{ maxHeight: 200 }} 
+                showsVerticalScrollIndicator={true}
+                nestedScrollEnabled={true}
+              >
+                <View className="gap-2">
+                  {extras.map((extra) => (
+                    <Pressable
+                      key={extra.id}
+                      onPress={() => toggleExtra(extra)}
+                      className={`flex-row items-center justify-between p-3 rounded-lg border ${
+                        isExtraSelected(extra)
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-200 bg-white"
+                      }`}
+                    >
+                      <Text
+                        className={`text-sm ${
+                          isExtraSelected(extra)
+                            ? "text-blue-700 font-semibold"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {extra.name}
+                      </Text>
+                      <Text
+                        className={`text-sm ${
+                          isExtraSelected(extra)
+                            ? "text-blue-600 font-semibold"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        +{extra.price.toFixed(2)} €
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+          )}
 
           <View className="flex-row items-center justify-between gap-4 mb-4">
             <Text className="text-base font-semibold text-gray-900">
@@ -84,7 +157,7 @@ export function ItemDetailDialog({
                 variant="outline"
                 size="icon"
                 onPress={handleDecrease}
-                disabled={quantity === 0}
+                disabled={quantity === 1}
               >
                 <Text className="text-lg font-semibold">−</Text>
               </Button>
@@ -97,12 +170,10 @@ export function ItemDetailDialog({
             </View>
           </View>
 
-          <Button
-            variant="default"
-            onPress={handleAddToCart}
-            disabled={quantity === 0}
-          >
-            <Text>Ajouter au panier</Text>
+          <Button variant="default" onPress={handleAddToCart}>
+            <Text className="text-white font-semibold">
+              Ajouter • {totalPrice.toFixed(2)} €
+            </Text>
           </Button>
         </ScrollView>
       </DialogContent>
