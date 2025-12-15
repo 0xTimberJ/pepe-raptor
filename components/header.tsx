@@ -7,11 +7,11 @@ export function Header() {
   return (
     <View className="bg-primary px-6 py-4 shadow-lg">
       <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center">
+        <Pressable onPress={() => router.push("/")} className="flex-row items-center">
           <Text className="text-4xl font-modak text-primary-foreground">
             PepeRaptor
           </Text>
-        </View>
+        </Pressable>
 
         <Pressable 
           onPress={() => router.push("/loyalty" as any)}
