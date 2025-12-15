@@ -1,6 +1,8 @@
 import { ScrollView, View, Pressable, Image } from "react-native";
 import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "expo-router";
+import { useAuthStore } from "@/stores/auth-store";
 
 const IMAGES = {
   burgers: [
@@ -48,7 +50,13 @@ const REWARDS: RewardTier[] = [
 
 export function LoyaltyScreen() {
   const router = useRouter();
-  const userPoints = 0;
+  const { user, isAuthenticated, logout } = useAuthStore();
+  const userPoints = user?.points || 0;
+
+  const handleLogout = () => {
+    logout();
+    router.replace("/");
+  };
 
   return (
     <ScrollView className="flex-1 bg-gray-50">
@@ -57,9 +65,24 @@ export function LoyaltyScreen() {
           <Text className="text-primary-foreground text-lg">← Retour</Text>
         </Pressable>
         <View className="bg-white rounded-2xl p-6 items-center">
-          <Text className="text-primary text-lg mb-2">Mes points fidelite</Text>
-          <Text className="text-primary text-5xl font-bold">{userPoints}</Text>
-          <Text className="text-gray-500 text-sm mt-2">1 euro = 1 point</Text>
+          {isAuthenticated && user ? (
+            <>
+              <Text className="text-gray-500 text-sm mb-1">Bonjour {user.name}</Text>
+              <Text className="text-primary text-lg mb-2">Mes points fidelite</Text>
+              <Text className="text-primary text-5xl font-bold">{userPoints}</Text>
+              <Text className="text-gray-500 text-sm mt-2">1 euro = 1 point</Text>
+            </>
+          ) : (
+            <>
+              <Text className="text-primary text-lg mb-2">Programme fidelite</Text>
+              <Text className="text-gray-500 text-center mb-4">
+                Connectez-vous pour cumuler des points
+              </Text>
+              <Button onPress={() => router.push("/auth" as any)}>
+                <Text className="text-white font-semibold">Se connecter</Text>
+              </Button>
+            </>
+          )}
         </View>
       </View>
 
@@ -122,6 +145,12 @@ export function LoyaltyScreen() {
             Echangez-les contre des produits gratuits
           </Text>
         </View>
+
+        {isAuthenticated && (
+          <Pressable onPress={handleLogout} className="mb-6">
+            <Text className="text-red-500 text-center font-semibold">Se deconnecter</Text>
+          </Pressable>
+        )}
       </View>
     </ScrollView>
   );
