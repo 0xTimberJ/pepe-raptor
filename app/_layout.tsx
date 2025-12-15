@@ -11,6 +11,9 @@ import { useEffect } from "react";
 
 import EventSource from "react-native-sse";
 import "../style/global.css";
+import { View } from "react-native";
+import { Header } from "@/components/header";
+
 // @ts-ignore
 global.EventSource = EventSource;
 
@@ -39,7 +42,11 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={theme}>
       <StatusBar style={isDark ? "light" : "dark"} />
-      <Stack />
+      
+      <View className="flex-1">
+        <Header />
+        <Stack screenOptions={{ headerShown: false }} />
+      </View>
       <PortalHost />
       <ThemeToggle />
     </ThemeProvider>
