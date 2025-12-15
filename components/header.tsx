@@ -1,6 +1,9 @@
 import { View, Text, Image, Pressable } from "react-native";
+import { useRouter } from "expo-router";
 
 export function Header() {
+  const router = useRouter();
+
   return (
     <View className="bg-primary px-6 py-4 shadow-lg">
       <View className="flex-row items-center justify-between">
@@ -10,8 +13,10 @@ export function Header() {
           </Text>
         </View>
 
-        {/* Section fidélité */}
-        <Pressable className="flex-row items-center bg-primary-foreground/10 rounded-full px-4 py-2 active:opacity-80">
+        <Pressable 
+          onPress={() => router.push("/loyalty" as any)}
+          className="flex-row items-center bg-primary-foreground/10 rounded-full px-4 py-2 active:opacity-80"
+        >
           <View className="w-10 h-10 rounded-full mr-2 bg-primary-foreground/20 items-center justify-center overflow-hidden">
             <Image
               source={require("../assets/images/raptorfid.png")}
