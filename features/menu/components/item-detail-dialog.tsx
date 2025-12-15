@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import type { MenuItem } from "../types/menu-item";
 import { useExtras } from "../hooks/use-extras";
 import type { Extra } from "../api/extras";
+import { useCartStore } from "@/stores/cart-store";
 
 interface ItemDetailDialogProps {
   item: MenuItem | null;
@@ -32,6 +33,7 @@ export function ItemDetailDialog({
   const [quantity, setQuantity] = useState(1);
   const [selectedExtras, setSelectedExtras] = useState<Extra[]>([]);
   const { extras } = useExtras();
+  const addItem = useCartStore((state) => state.addItem);
 
   useEffect(() => {
     if (open) {
@@ -69,7 +71,7 @@ export function ItemDetailDialog({
   };
 
   const handleAddToCart = () => {
-    console.log("Add to cart:", { item, quantity, selectedExtras, totalPrice });
+    addItem(item, selectedExtras, quantity);
     onOpenChange(false);
   };
 

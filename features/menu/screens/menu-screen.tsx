@@ -2,6 +2,7 @@ import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import { MenuSection } from "../components/menu-section";
 import { useMenu } from "../hooks/use-menu";
 import type { MenuSection as MenuSectionType } from "../types/menu-item";
+import { CartButton } from "@/components/cart-button";
 
 export function MenuScreen() {
   const {
@@ -54,8 +55,9 @@ export function MenuScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      <View className="bg-white px-4 py-6 shadow-sm">
+      <View className="bg-white px-4 py-6 shadow-sm flex-row justify-between items-center">
         <Text className="text-3xl font-bold text-gray-900">Menu</Text>
+        <CartButton />
       </View>
 
       {hasAnyItems ? (
