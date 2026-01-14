@@ -75,43 +75,42 @@ export function ItemDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85%]">
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View className="flex-row gap-4 mb-4">
-            {item.image && (
-              <Image
-                source={{ uri: getImageUrl(item, item.image) }}
-                className="w-32 h-32 rounded-lg"
-                resizeMode="cover"
-              />
-            )}
+      <DialogContent className="max-h-[90%]">
+        <View className="flex-1">
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ maxHeight: 400 }}
+          >
+            <View className="flex-row gap-4 mb-4">
+              {item.image && (
+                <Image
+                  source={{ uri: getImageUrl(item, item.image) }}
+                  className="w-28 h-28 rounded-lg"
+                  resizeMode="cover"
+                />
+              )}
 
-            <View className="flex-1 gap-2">
-              <DialogHeader>
-                <DialogTitle className="text-xl">{item.name}</DialogTitle>
-                {item.description && (
-                  <DialogDescription className="text-sm mt-1">
-                    {item.description}
-                  </DialogDescription>
-                )}
-              </DialogHeader>
+              <View className="flex-1 gap-2">
+                <DialogHeader>
+                  <DialogTitle className="text-xl">{item.name}</DialogTitle>
+                  {item.description && (
+                    <DialogDescription className="text-sm mt-1">
+                      {item.description}
+                    </DialogDescription>
+                  )}
+                </DialogHeader>
 
-              <Text className="text-lg font-semibold text-gray-600">
-                {basePrice.toFixed(2)} €
-              </Text>
+                <Text className="text-lg font-semibold text-gray-600">
+                  {basePrice.toFixed(2)} €
+                </Text>
+              </View>
             </View>
-          </View>
 
-          {extras.length > 0 && (
-            <View className="mb-4">
-              <Text className="text-base font-semibold text-gray-900 mb-2">
-                Extras
-              </Text>
-              <ScrollView
-                style={{ maxHeight: 200 }}
-                showsVerticalScrollIndicator={true}
-                nestedScrollEnabled={true}
-              >
+            {extras.length > 0 && (
+              <View className="mb-4">
+                <Text className="text-base font-semibold text-gray-900 mb-2">
+                  Extras
+                </Text>
                 <View className="gap-2">
                   {extras.map((extra) => (
                     <Pressable
@@ -144,38 +143,40 @@ export function ItemDetailDialog({
                     </Pressable>
                   ))}
                 </View>
-              </ScrollView>
-            </View>
-          )}
+              </View>
+            )}
+          </ScrollView>
 
-          <View className="flex-row items-center justify-between gap-4 mb-4">
-            <Text className="text-base font-semibold text-gray-900">
-              Quantité
-            </Text>
-            <View className="flex-row items-center gap-3">
-              <Button
-                variant="outline"
-                size="icon"
-                onPress={handleDecrease}
-                disabled={quantity === 1}
-              >
-                <Text className="text-lg font-semibold">−</Text>
-              </Button>
-              <Text className="text-xl font-semibold text-gray-900 min-w-[40px] text-center">
-                {quantity}
+          <View className="pt-4 border-t border-gray-100 mt-2">
+            <View className="flex-row items-center justify-between gap-4 mb-4">
+              <Text className="text-base font-semibold text-gray-900">
+                Quantité
               </Text>
-              <Button variant="outline" size="icon" onPress={handleIncrease}>
-                <Text className="text-lg font-semibold">+</Text>
-              </Button>
+              <View className="flex-row items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onPress={handleDecrease}
+                  disabled={quantity === 1}
+                >
+                  <Text className="text-lg font-semibold">−</Text>
+                </Button>
+                <Text className="text-xl font-semibold text-gray-900 min-w-[40px] text-center">
+                  {quantity}
+                </Text>
+                <Button variant="outline" size="icon" onPress={handleIncrease}>
+                  <Text className="text-lg font-semibold">+</Text>
+                </Button>
+              </View>
             </View>
-          </View>
 
-          <Button variant="default" onPress={handleAddToCart}>
-            <Text className="text-white font-semibold">
-              Ajouter • {totalPrice.toFixed(2)} €
-            </Text>
-          </Button>
-        </ScrollView>
+            <Button variant="default" onPress={handleAddToCart}>
+              <Text className="text-white font-semibold">
+                Ajouter • {totalPrice.toFixed(2)} €
+              </Text>
+            </Button>
+          </View>
+        </View>
       </DialogContent>
     </Dialog>
   );
