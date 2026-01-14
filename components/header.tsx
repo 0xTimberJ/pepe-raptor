@@ -20,7 +20,7 @@ export function Header() {
   };
 
   return (
-    <View className="bg-primary px-6 py-4 shadow-lg">
+    <View className="bg-primary px-6 py-4">
       <View className="flex-row items-center justify-between">
         <Pressable onPress={() => router.push("/")} className="flex-row items-center">
           <Text className="text-4xl font-modak text-primary-foreground">

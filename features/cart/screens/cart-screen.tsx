@@ -34,7 +34,7 @@ function CartItemRow({
   };
 
   return (
-    <View className="flex-row bg-white rounded-xl p-3 mb-3 shadow-sm">
+    <View className="flex-row bg-white rounded-xl p-3 mb-3 border border-gray-100">
       {item.product.image && (
         <Image
           source={{ uri: getImageUrl(item.product, item.product.image) }}
@@ -103,7 +103,7 @@ export function CartScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      <View className="bg-white px-4 py-6 shadow-sm">
+      <View className="bg-white px-4 py-6 border-b border-gray-200">
         <Text className="text-3xl font-bold text-gray-900">Panier</Text>
         <Text className="text-gray-500">{items.length} article(s)</Text>
       </View>

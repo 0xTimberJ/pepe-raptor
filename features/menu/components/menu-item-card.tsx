@@ -25,7 +25,7 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
 
   return (
     <View
-      className="bg-white rounded-xl overflow-hidden shadow-sm"
+      className="bg-white rounded-xl overflow-hidden border border-gray-100"
       style={{ width: cardWidth, height: cardHeight }}
     >
       {item.image ? (

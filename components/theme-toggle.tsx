@@ -18,8 +18,8 @@ export function ThemeToggle() {
         bottom: 16,
         left: 16,
         zIndex: 9999,
+        pointerEvents: "box-none",
       }}
-      pointerEvents="box-none"
     >
       <Pressable
         onPress={toggleTheme}
@@ -30,10 +30,6 @@ export function ThemeToggle() {
           backgroundColor: currentScheme === "dark" ? "#3b82f6" : "#1e293b",
           alignItems: "center",
           justifyContent: "center",
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.84,
           elevation: 5,
         }}
       >

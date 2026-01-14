@@ -19,7 +19,7 @@ export function CheckoutConfirmation({
 }: CheckoutConfirmationProps) {
   return (
     <View className="flex-1 bg-gray-50 justify-center items-center px-6">
-      <View className="bg-white rounded-2xl p-8 items-center w-full shadow-sm">
+      <View className="bg-white rounded-2xl p-8 items-center w-full border border-gray-200">
         <Text className="text-6xl mb-4">✅</Text>
         <Text className="text-2xl font-bold text-gray-900 mb-2">Merci !</Text>
         <Text className="text-gray-500 text-center mb-6">

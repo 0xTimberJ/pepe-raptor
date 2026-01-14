@@ -58,7 +58,7 @@ export function AuthScreen() {
           </Text>
         </View>
 
-        <View className="bg-white rounded-2xl p-6 shadow-sm">
+        <View className="bg-white rounded-2xl p-6 border border-gray-200">
           {!isLogin && (
             <View className="mb-4">
               <Text className="text-sm font-semibold text-gray-700 mb-2">Nom</Text>

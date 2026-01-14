@@ -19,7 +19,7 @@ export function CheckoutRecap({ items, total, pointsToEarn, isAuthenticated }: C
   return (
     <>
       {items.map((item) => (
-        <View key={item.id} className="flex-row bg-white rounded-xl p-3 mb-3 shadow-sm">
+        <View key={item.id} className="flex-row bg-white rounded-xl p-3 mb-3 border border-gray-100">
           {item.product.image && (
             <Image
               source={{ uri: getImageUrl(item.product, item.product.image) }}
