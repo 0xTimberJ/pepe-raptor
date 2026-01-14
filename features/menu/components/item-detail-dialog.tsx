@@ -1,15 +1,20 @@
-import { Image, ScrollView, View, Pressable } from "react-native";
+import {
+  Image,
+  ScrollView,
+  View,
+  Pressable,
+  useWindowDimensions,
+} from "react-native";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { getImageUrl } from "@/lib/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { MenuItem } from "../types/menu-item";
 import { useExtras } from "../hooks/use-extras";
 import type { Extra } from "../api/extras";
@@ -20,17 +25,51 @@ interface ItemDetailDialogProps {
   item: MenuItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  category?: string;
 }
 
 export function ItemDetailDialog({
   item,
   open,
   onOpenChange,
+  category = "",
 }: ItemDetailDialogProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedExtras, setSelectedExtras] = useState<Extra[]>([]);
   const { extras } = useExtras();
   const addItem = useCartStore((state) => state.addItem);
+  const { width: screenWidth } = useWindowDimensions();
+
+  // Calculer les tailles responsive
+  const responsiveSizes = useMemo(() => {
+    const isSmallScreen = screenWidth < 375;
+    const isMediumScreen = screenWidth >= 375 && screenWidth < 768;
+
+    return {
+      imageSize: isSmallScreen
+        ? "w-24 h-24"
+        : isMediumScreen
+          ? "w-28 h-28"
+          : "w-32 h-32",
+      titleSize: isSmallScreen
+        ? "text-lg"
+        : isMediumScreen
+          ? "text-xl"
+          : "text-2xl",
+      priceSize: isSmallScreen
+        ? "text-base"
+        : isMediumScreen
+          ? "text-lg"
+          : "text-xl",
+      extrasTitleSize: isSmallScreen ? "text-sm" : "text-base",
+      extrasTextSize: isSmallScreen ? "text-xs" : "text-sm",
+      quantityTitleSize: isSmallScreen ? "text-sm" : "text-base",
+      quantityNumberSize: isSmallScreen ? "text-lg" : "text-xl",
+      buttonTextSize: isSmallScreen ? "text-sm" : "text-base",
+      padding: isSmallScreen ? "p-2" : "p-3",
+      gap: isSmallScreen ? "gap-3" : "gap-4",
+    };
+  }, [screenWidth]);
 
   useEffect(() => {
     if (open) {
@@ -40,6 +79,12 @@ export function ItemDetailDialog({
   }, [open]);
 
   if (!item) return null;
+
+  // Catégories qui ne doivent pas avoir de suppléments
+  const categoriesWithoutExtras = ["sauce", "drinks", "desserts", "frites"];
+  const shouldShowExtras = !categoriesWithoutExtras.includes(category);
+
+  console.log("Category:", category, "shouldShowExtras:", shouldShowExtras);
 
   const basePrice = item.price ?? 0;
   const extrasTotal = selectedExtras.reduce((sum, e) => sum + e.price, 0);
@@ -75,107 +120,108 @@ export function ItemDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90%]">
-        <View className="flex-1">
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            style={{ maxHeight: 400 }}
-          >
-            <View className="flex-row gap-4 mb-4">
-              {item.image && (
-                <Image
-                  source={{ uri: getImageUrl(item, item.image) }}
-                  className="w-28 h-28 rounded-lg"
-                  resizeMode="cover"
-                />
-              )}
+      <DialogContent className="flex flex-col">
+        {/* Section fixe - Image et description */}
+        <View className={`flex-row mb-4 ${responsiveSizes.gap}`}>
+          {item.image && (
+            <Image
+              source={{ uri: getImageUrl(item, item.image) }}
+              className={`${responsiveSizes.imageSize} rounded-lg`}
+              resizeMode="cover"
+            />
+          )}
 
-              <View className="flex-1 gap-2">
-                <DialogHeader>
-                  <DialogTitle className="text-xl">{item.name}</DialogTitle>
-                  {item.description && (
-                    <DialogDescription className="text-sm mt-1">
-                      {item.description}
-                    </DialogDescription>
-                  )}
-                </DialogHeader>
+          <View className="flex-1 gap-2">
+            <DialogHeader>
+              <DialogTitle className={responsiveSizes.titleSize}>
+                {item.name}
+              </DialogTitle>
+            </DialogHeader>
 
-                <Text className="text-lg font-semibold text-gray-600">
-                  {basePrice.toFixed(2)} €
-                </Text>
-              </View>
-            </View>
+            <Text
+              className={`${responsiveSizes.priceSize} font-semibold text-gray-600`}
+            >
+              {basePrice.toFixed(2)} €
+            </Text>
+          </View>
+        </View>
 
-            {extras.length > 0 && (
-              <View className="mb-4">
-                <Text className="text-base font-semibold text-gray-900 mb-2">
-                  Extras
-                </Text>
-                <View className="gap-2">
-                  {extras.map((extra) => (
-                    <Pressable
-                      key={extra.id}
-                      onPress={() => toggleExtra(extra)}
-                      className={`flex-row items-center justify-between p-3 rounded-lg border ${
+        {/* Section scrollable - Uniquement les extras */}
+        {shouldShowExtras && extras.length > 0 && (
+          <View className="mb-4">
+            <Text className="text-base font-semibold text-gray-900 mb-2">
+              Extras
+            </Text>
+            <ScrollView
+              showsVerticalScrollIndicator={true}
+              nestedScrollEnabled={true}
+              style={{ maxHeight: 200 }}
+            >
+              <View className="gap-2 pb-2">
+                {extras.map((extra) => (
+                  <Pressable
+                    key={extra.id}
+                    onPress={() => toggleExtra(extra)}
+                    className={`flex-row items-center justify-between p-3 rounded-lg border ${
+                      isExtraSelected(extra)
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-200 bg-white"
+                    }`}
+                  >
+                    <Text
+                      className={`text-sm ${
                         isExtraSelected(extra)
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-200 bg-white"
+                          ? "text-blue-700 font-semibold"
+                          : "text-gray-700"
                       }`}
                     >
-                      <Text
-                        className={`text-sm ${
-                          isExtraSelected(extra)
-                            ? "text-blue-700 font-semibold"
-                            : "text-gray-700"
-                        }`}
-                      >
-                        {extra.name}
-                      </Text>
-                      <Text
-                        className={`text-sm ${
-                          isExtraSelected(extra)
-                            ? "text-blue-600 font-semibold"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        +{extra.price.toFixed(2)} €
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
+                      {extra.name}
+                    </Text>
+                    <Text
+                      className={`text-sm ${
+                        isExtraSelected(extra)
+                          ? "text-blue-600 font-semibold"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      +{extra.price.toFixed(2)} €
+                    </Text>
+                  </Pressable>
+                ))}
               </View>
-            )}
-          </ScrollView>
-
-          <View className="pt-4 border-t border-gray-100 mt-2">
-            <View className="flex-row items-center justify-between gap-4 mb-4">
-              <Text className="text-base font-semibold text-gray-900">
-                Quantité
-              </Text>
-              <View className="flex-row items-center gap-3">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onPress={handleDecrease}
-                  disabled={quantity === 1}
-                >
-                  <Text className="text-lg font-semibold">−</Text>
-                </Button>
-                <Text className="text-xl font-semibold text-gray-900 min-w-[40px] text-center">
-                  {quantity}
-                </Text>
-                <Button variant="outline" size="icon" onPress={handleIncrease}>
-                  <Text className="text-lg font-semibold">+</Text>
-                </Button>
-              </View>
-            </View>
-
-            <Button variant="default" onPress={handleAddToCart}>
-              <Text className="text-white font-semibold">
-                Ajouter • {totalPrice.toFixed(2)} €
-              </Text>
-            </Button>
+            </ScrollView>
           </View>
+        )}
+
+        {/* Section fixe - Quantité et bouton */}
+        <View className="pt-4 border-t border-gray-100">
+          <View className="flex-row items-center justify-between gap-4 mb-4">
+            <Text className="text-base font-semibold text-gray-900">
+              Quantité
+            </Text>
+            <View className="flex-row items-center gap-3">
+              <Button
+                variant="outline"
+                size="icon"
+                onPress={handleDecrease}
+                disabled={quantity === 1}
+              >
+                <Text className="text-lg font-semibold">−</Text>
+              </Button>
+              <Text className="text-xl font-semibold text-gray-900 min-w-[40px] text-center">
+                {quantity}
+              </Text>
+              <Button variant="outline" size="icon" onPress={handleIncrease}>
+                <Text className="text-lg font-semibold">+</Text>
+              </Button>
+            </View>
+          </View>
+
+          <Button variant="default" onPress={handleAddToCart}>
+            <Text className="text-white font-semibold">
+              Ajouter • {totalPrice.toFixed(2)} €
+            </Text>
+          </Button>
         </View>
       </DialogContent>
     </Dialog>

@@ -57,6 +57,7 @@ export function MenuSection({ section }: MenuSectionProps) {
         item={selectedItem}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
+        category={section.id}
       />
     </>
   );
