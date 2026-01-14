@@ -82,6 +82,23 @@ export function useCheckout() {
     setPaymentLoading(false);
   }, [pointsToEarn, isAuthenticated, user, addPoints, clearCart]);
 
+  const handlePaymentSuccess = useCallback(
+    async (generatedOrderNumber: string) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+      setOrderNumber(generatedOrderNumber);
+      setEarnedPoints(pointsToEarn);
+
+      if (isAuthenticated && user && pointsToEarn > 0) {
+        await addPoints(pointsToEarn);
+      }
+
+      clearCart();
+      setStep("confirmation");
+    },
+    [pointsToEarn, isAuthenticated, user, addPoints, clearCart]
+  );
+
   return {
     step,
     items,
@@ -97,6 +114,7 @@ export function useCheckout() {
     handleValidateRecap,
     handleValidateTable,
     handlePayment,
+    handlePaymentSuccess,
     navigateBack: () => router.back(),
     navigateToMenu: () => router.replace("/menu"),
   };

@@ -15,14 +15,13 @@ export function CheckoutScreen() {
     setTableNumber,
     orderNumber,
     earnedPoints,
-    paymentLoading,
     paidTotal,
     onlyRewards,
     pointsToEarn,
     isAuthenticated,
     handleValidateRecap,
     handleValidateTable,
-    handlePayment,
+    handlePaymentSuccess,
     navigateBack,
     navigateToMenu,
   } = useCheckout();
@@ -71,33 +70,30 @@ export function CheckoutScreen() {
           />
         )}
         {step === "payment" && (
-          <CheckoutPayment tableNumber={tableNumber} total={paidTotal} />
+          <CheckoutPayment
+            tableNumber={tableNumber}
+            total={paidTotal}
+            onPaymentSuccess={handlePaymentSuccess}
+          />
         )}
       </ScrollView>
 
-      <View className="bg-white px-4 py-4 border-t border-gray-200">
-        {step === "recap" && (
-          <Button onPress={handleValidateRecap} disabled={items.length === 0}>
-            <Text className="text-white font-semibold">Continuer</Text>
-          </Button>
-        )}
-        {step === "table" && (
-          <Button onPress={handleValidateTable} disabled={!tableNumber}>
-            <Text className="text-white font-semibold">
-              {onlyRewards ? "Valider ma commande" : "Continuer"}
-            </Text>
-          </Button>
-        )}
-        {step === "payment" && (
-          <Button onPress={handlePayment} disabled={paymentLoading}>
-            <Text className="text-white font-semibold">
-              {paymentLoading
-                ? "Paiement en cours..."
-                : `Payer ${paidTotal.toFixed(2)} €`}
-            </Text>
-          </Button>
-        )}
-      </View>
+      {step !== "payment" && (
+        <View className="bg-white px-4 py-4 border-t border-gray-200">
+          {step === "recap" && (
+            <Button onPress={handleValidateRecap} disabled={items.length === 0}>
+              <Text className="text-white font-semibold">Continuer</Text>
+            </Button>
+          )}
+          {step === "table" && (
+            <Button onPress={handleValidateTable} disabled={!tableNumber}>
+              <Text className="text-white font-semibold">
+                {onlyRewards ? "Valider ma commande" : "Continuer"}
+              </Text>
+            </Button>
+          )}
+        </View>
+      )}
     </View>
   );
 }
