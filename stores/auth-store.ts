@@ -54,15 +54,29 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   register: async (email, password, name) => {
     try {
-      await pb.collection("users").create({
+      console.log("🔵 Tentative d'inscription avec :", { email, name });
+
+      const data = {
         email,
         password,
         passwordConfirm: password,
         name,
         points: 0,
-      });
+      };
+
+      console.log("📤 Données envoyées à PocketBase :", data);
+
+      const result = await pb.collection("users").create(data);
+
+      console.log("✅ Utilisateur créé avec succès :", result);
+
       await get().login(email, password);
-    } catch (error) {
+    } catch (error: any) {
+      console.error("❌ Erreur lors de l'inscription :");
+      console.error("Status:", error?.status);
+      console.error("Message:", error?.message);
+      console.error("Data:", error?.data);
+      console.error("Response:", JSON.stringify(error?.response, null, 2));
       throw error;
     }
   },

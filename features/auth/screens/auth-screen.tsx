@@ -35,6 +35,11 @@ export function AuthScreen() {
       return;
     }
 
+    if (!isLogin && password.length < 8) {
+      setError("Le mot de passe doit contenir au moins 8 caractères");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -42,11 +47,36 @@ export function AuthScreen() {
       if (isLogin) {
         await login(email, password);
       } else {
+        console.log("📝 Inscription avec:", { email, name });
         await register(email, password, name);
       }
       router.replace("/menu");
     } catch (err: any) {
-      setError(err?.message || "Une erreur est survenue");
+      console.error("🔴 Erreur complète:", err);
+      console.error("🔴 Erreur data:", err?.data);
+
+      let errorMessage = "Une erreur est survenue";
+
+      if (err?.data?.data) {
+        const validationErrors = err.data.data;
+
+        const firstError = Object.values(validationErrors)[0] as any;
+        if (firstError?.message) {
+          const translations: Record<string, string> = {
+            "Must be at least 8 character(s).":
+              "Le mot de passe doit contenir au moins 8 caractères",
+            "Invalid email format.": "Format d'email invalide",
+            "The email is invalid or already in use.":
+              "Cet email est déjà utilisé",
+          };
+
+          errorMessage = translations[firstError.message] || firstError.message;
+        }
+      } else if (err?.message) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -117,6 +147,11 @@ export function AuthScreen() {
                 <Text className="text-xl">{showPassword ? "🙈" : "👁️"}</Text>
               </Pressable>
             </View>
+            {!isLogin && (
+              <Text className="text-xs text-gray-500 mt-1">
+                Minimum 8 caractères
+              </Text>
+            )}
           </View>
 
           {error ? (
