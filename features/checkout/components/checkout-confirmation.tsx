@@ -25,15 +25,21 @@ export function CheckoutConfirmation({
         <Text className="text-gray-500 text-center mb-6">
           Votre commande a ete enregistree
         </Text>
-        
+
         <View className="bg-primary/10 rounded-xl p-4 w-full mb-6">
-          <Text className="text-center text-gray-600 mb-1">Numero de commande</Text>
-          <Text className="text-center text-2xl font-bold text-primary">{orderNumber}</Text>
+          <Text className="text-center text-gray-600 mb-1">
+            Numero de commande
+          </Text>
+          <Text className="text-center text-2xl font-bold text-primary">
+            {orderNumber}
+          </Text>
         </View>
-        
+
         <View className="bg-gray-100 rounded-xl p-4 w-full mb-6">
           <Text className="text-center text-gray-600 mb-1">Table</Text>
-          <Text className="text-center text-xl font-semibold text-gray-900">{tableNumber}</Text>
+          <Text className="text-center text-xl font-semibold text-gray-900">
+            {tableNumber}
+          </Text>
         </View>
 
         {isAuthenticated && earnedPoints > 0 && (

@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { View, TextInput, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  View,
+  TextInput,
+  Pressable,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/auth-store";
@@ -8,7 +15,7 @@ import { useRouter } from "expo-router";
 export function AuthScreen() {
   const router = useRouter();
   const { login, register } = useAuthStore();
-  
+
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +29,7 @@ export function AuthScreen() {
       setError("Veuillez remplir tous les champs");
       return;
     }
-    
+
     if (!isLogin && !name) {
       setError("Veuillez entrer votre nom");
       return;
@@ -46,13 +53,15 @@ export function AuthScreen() {
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1 bg-gray-50"
     >
       <View className="flex-1 justify-center px-6">
         <View className="items-center mb-8">
-          <Text className="text-4xl font-modak text-primary mb-2">PepeRaptor</Text>
+          <Text className="text-4xl font-modak text-primary mb-2">
+            PepeRaptor
+          </Text>
           <Text className="text-gray-500">
             {isLogin ? "Connectez-vous a votre compte" : "Creez votre compte"}
           </Text>
@@ -61,7 +70,9 @@ export function AuthScreen() {
         <View className="bg-white rounded-2xl p-6 border border-gray-200">
           {!isLogin && (
             <View className="mb-4">
-              <Text className="text-sm font-semibold text-gray-700 mb-2">Nom</Text>
+              <Text className="text-sm font-semibold text-gray-700 mb-2">
+                Nom
+              </Text>
               <TextInput
                 value={name}
                 onChangeText={setName}
@@ -73,7 +84,9 @@ export function AuthScreen() {
           )}
 
           <View className="mb-4">
-            <Text className="text-sm font-semibold text-gray-700 mb-2">Email</Text>
+            <Text className="text-sm font-semibold text-gray-700 mb-2">
+              Email
+            </Text>
             <TextInput
               value={email}
               onChangeText={setEmail}
@@ -86,7 +99,9 @@ export function AuthScreen() {
           </View>
 
           <View className="mb-6">
-            <Text className="text-sm font-semibold text-gray-700 mb-2">Mot de passe</Text>
+            <Text className="text-sm font-semibold text-gray-700 mb-2">
+              Mot de passe
+            </Text>
             <View className="relative">
               <TextInput
                 value={password}
@@ -95,7 +110,7 @@ export function AuthScreen() {
                 className="bg-gray-100 rounded-xl px-4 py-3 pr-12 text-gray-900"
                 secureTextEntry={!showPassword}
               />
-              <Pressable 
+              <Pressable
                 onPress={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-3"
               >
@@ -122,13 +137,17 @@ export function AuthScreen() {
 
           <Pressable onPress={() => setIsLogin(!isLogin)}>
             <Text className="text-center text-primary">
-              {isLogin ? "Pas de compte ? Inscrivez-vous" : "Deja un compte ? Connectez-vous"}
+              {isLogin
+                ? "Pas de compte ? Inscrivez-vous"
+                : "Deja un compte ? Connectez-vous"}
             </Text>
           </Pressable>
         </View>
 
         <Pressable onPress={() => router.back()} className="mt-6">
-          <Text className="text-center text-gray-500">Continuer sans compte</Text>
+          <Text className="text-center text-gray-500">
+            Continuer sans compte
+          </Text>
         </Pressable>
       </View>
     </KeyboardAvoidingView>

@@ -1,8 +1,15 @@
+jest.mock("../stores/auth-store", () => ({
+  useAuthStore: {
+    getState: () => ({
+      addPoints: jest.fn(),
+    }),
+  },
+}));
+
 import { useCartStore } from "../stores/cart-store";
 import type { MenuItem } from "../features/menu/types/menu-item";
 import type { Extra } from "../features/menu/api/extras";
 
-// Mock product data
 const mockProduct: MenuItem = {
   id: "burger-1",
   name: "Classic Burger",
@@ -21,7 +28,6 @@ const mockExtra: Extra = {
   updated: "2024-01-01T00:00:00.000Z",
 };
 
-// Reset store before each test
 beforeEach(() => {
   useCartStore.setState({ items: [] });
 });
@@ -45,7 +51,7 @@ describe("Cart Store", () => {
       addItem(mockProduct, [mockExtra], 1);
 
       const updatedItems = useCartStore.getState().items;
-      expect(updatedItems[0].unitPrice).toBe(11.5); // 10 + 1.5
+      expect(updatedItems[0].unitPrice).toBe(11.5);
     });
   });
 
@@ -89,13 +95,13 @@ describe("Cart Store", () => {
       addItem(mockProduct, [], 2);
 
       const total = useCartStore.getState().getTotal();
-      expect(total).toBe(20.0); // 10 * 2
+      expect(total).toBe(20.0);
     });
 
     it("should calculate total for multiple items with extras", () => {
       const { addItem } = useCartStore.getState();
-      addItem(mockProduct, [], 2); // 10 * 2 = 20
-      addItem(mockProduct, [mockExtra], 1); // 11.5 * 1 = 11.5
+      addItem(mockProduct, [], 2);
+      addItem(mockProduct, [mockExtra], 1);
 
       const total = useCartStore.getState().getTotal();
       expect(total).toBe(31.5);
@@ -127,6 +133,51 @@ describe("Cart Store", () => {
       clearCart();
 
       expect(useCartStore.getState().items).toHaveLength(0);
+    });
+  });
+
+  describe("addRewardItem", () => {
+    it("should add a reward item with isReward flag", () => {
+      const { addRewardItem } = useCartStore.getState();
+
+      addRewardItem("Coca-Cola", "Boisson", 25);
+
+      const items = useCartStore.getState().items;
+      expect(items).toHaveLength(1);
+      expect(items[0].isReward).toBe(true);
+      expect(items[0].unitPrice).toBe(0);
+      expect(items[0].rewardPointsCost).toBe(25);
+    });
+  });
+
+  describe("getPaidTotal", () => {
+    it("should exclude reward items from total", () => {
+      const { addItem, addRewardItem } = useCartStore.getState();
+
+      addItem(mockProduct, [], 1);
+      addRewardItem("Coca-Cola", "Boisson", 25);
+
+      const paidTotal = useCartStore.getState().getPaidTotal();
+      expect(paidTotal).toBe(10.0);
+    });
+  });
+
+  describe("hasOnlyRewards", () => {
+    it("should return true if cart has only rewards", () => {
+      const { addRewardItem } = useCartStore.getState();
+
+      addRewardItem("Coca-Cola", "Boisson", 25);
+
+      expect(useCartStore.getState().hasOnlyRewards()).toBe(true);
+    });
+
+    it("should return false if cart has paid items", () => {
+      const { addItem, addRewardItem } = useCartStore.getState();
+
+      addRewardItem("Coca-Cola", "Boisson", 25);
+      addItem(mockProduct, [], 1);
+
+      expect(useCartStore.getState().hasOnlyRewards()).toBe(false);
     });
   });
 });

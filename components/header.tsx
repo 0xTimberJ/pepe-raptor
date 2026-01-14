@@ -22,13 +22,16 @@ export function Header() {
   return (
     <View className="bg-primary px-6 py-4">
       <View className="flex-row items-center justify-between">
-        <Pressable onPress={() => router.push("/")} className="flex-row items-center">
+        <Pressable
+          onPress={() => router.push("/")}
+          className="flex-row items-center"
+        >
           <Text className="text-4xl font-modak text-primary-foreground">
             PepeRaptor
           </Text>
         </Pressable>
 
-        <Pressable 
+        <Pressable
           onPress={handleProfilePress}
           className="flex-row items-center bg-primary-foreground/10 rounded-full px-4 py-2 active:opacity-80"
         >
@@ -43,14 +46,18 @@ export function Header() {
           <View>
             {isAuthenticated && user ? (
               <>
-                <Text className="text-xs text-primary-foreground/80">{user.points} pts</Text>
+                <Text className="text-xs text-primary-foreground/80">
+                  {user.points} pts
+                </Text>
                 <Text className="text-sm font-semibold text-primary-foreground">
                   {user.name || "Mon compte"}
                 </Text>
               </>
             ) : (
               <>
-                <Text className="text-xs text-primary-foreground/80">Fidelite</Text>
+                <Text className="text-xs text-primary-foreground/80">
+                  Fidelite
+                </Text>
                 <Text className="text-sm font-semibold text-primary-foreground">
                   Se connecter
                 </Text>

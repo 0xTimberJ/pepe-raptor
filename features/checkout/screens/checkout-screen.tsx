@@ -22,7 +22,7 @@ const STEP_TITLES: Record<Exclude<CheckoutStep, "confirmation">, string> = {
 
 export function CheckoutScreen() {
   const router = useRouter();
-  const { items, getTotal, clearCart } = useCartStore();
+  const { items, getPaidTotal, hasOnlyRewards, clearCart } = useCartStore();
   const { user, isAuthenticated, addPoints } = useAuthStore();
 
   const [step, setStep] = useState<CheckoutStep>("recap");
@@ -31,8 +31,9 @@ export function CheckoutScreen() {
   const [earnedPoints, setEarnedPoints] = useState(0);
   const [paymentLoading, setPaymentLoading] = useState(false);
 
-  const total = getTotal();
-  const pointsToEarn = Math.floor(total);
+  const paidTotal = getPaidTotal();
+  const onlyRewards = hasOnlyRewards();
+  const pointsToEarn = Math.floor(paidTotal);
 
   const handleValidateRecap = () => {
     if (items.length === 0) return;
@@ -41,12 +42,26 @@ export function CheckoutScreen() {
 
   const handleValidateTable = () => {
     if (!tableNumber) return;
-    setStep("payment");
+
+    if (onlyRewards) {
+      handleFreeOrder();
+    } else {
+      setStep("payment");
+    }
+  };
+
+  const handleFreeOrder = async () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    setOrderNumber(`CMD-${Date.now().toString().slice(-6)}`);
+    setEarnedPoints(0); // Pas de points gagnés pour les commandes gratuites
+
+    clearCart();
+    setStep("confirmation");
   };
 
   const handlePayment = async () => {
     setPaymentLoading(true);
-    const pointsToAdd = Math.floor(getTotal());
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -56,10 +71,10 @@ export function CheckoutScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
       setOrderNumber(`CMD-${Date.now().toString().slice(-6)}`);
-      setEarnedPoints(pointsToAdd);
+      setEarnedPoints(pointsToEarn);
 
-      if (isAuthenticated && user) {
-        await addPoints(pointsToAdd);
+      if (isAuthenticated && user && pointsToEarn > 0) {
+        await addPoints(pointsToEarn);
       }
 
       clearCart();
@@ -93,13 +108,18 @@ export function CheckoutScreen() {
         <Text className="text-2xl font-bold text-primary-foreground">
           {STEP_TITLES[step]}
         </Text>
+        {onlyRewards && step !== "payment" && (
+          <View className="mt-2 bg-white/20 px-3 py-1 rounded-full self-start">
+            <Text className="text-white text-sm">🎁 Commande gratuite</Text>
+          </View>
+        )}
       </View>
 
       <ScrollView className="flex-1 px-4 py-4">
         {step === "recap" && (
           <CheckoutRecap
             items={items}
-            total={total}
+            total={paidTotal}
             pointsToEarn={pointsToEarn}
             isAuthenticated={isAuthenticated}
           />
@@ -111,7 +131,7 @@ export function CheckoutScreen() {
           />
         )}
         {step === "payment" && (
-          <CheckoutPayment tableNumber={tableNumber} total={total} />
+          <CheckoutPayment tableNumber={tableNumber} total={paidTotal} />
         )}
       </ScrollView>
 
@@ -123,7 +143,9 @@ export function CheckoutScreen() {
         )}
         {step === "table" && (
           <Button onPress={handleValidateTable} disabled={!tableNumber}>
-            <Text className="text-white font-semibold">Continuer</Text>
+            <Text className="text-white font-semibold">
+              {onlyRewards ? "Valider ma commande" : "Continuer"}
+            </Text>
           </Button>
         )}
         {step === "payment" && (
@@ -131,7 +153,7 @@ export function CheckoutScreen() {
             <Text className="text-white font-semibold">
               {paymentLoading
                 ? "Paiement en cours..."
-                : `Payer ${total.toFixed(2)} €`}
+                : `Payer ${paidTotal.toFixed(2)} €`}
             </Text>
           </Button>
         )}

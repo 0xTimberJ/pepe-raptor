@@ -6,7 +6,6 @@ import { useCartStore } from "@/stores/cart-store";
 import * as Haptics from "expo-haptics";
 import { useState } from "react";
 
-// Types for reward items
 interface RewardItem {
   id: string;
   name: string;
@@ -14,7 +13,6 @@ interface RewardItem {
   category: string;
 }
 
-// All available reward items by tier
 const REWARD_ITEMS: Record<string, RewardItem[]> = {
   "25": [
     {
@@ -88,7 +86,7 @@ export function RedeemScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ tier: string }>();
   const { user, isAuthenticated } = useAuthStore();
-  const { addItem } = useCartStore();
+  const { addRewardItem } = useCartStore();
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [isRedeeming, setIsRedeeming] = useState(false);
 
@@ -111,32 +109,16 @@ export function RedeemScreen() {
     setIsRedeeming(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-    // Find the selected item
     const item = items.find((i) => i.id === selectedItem);
     if (!item) return;
 
-    // Deduct points
     const { addPoints } = useAuthStore.getState();
     await addPoints(-requiredPoints);
 
-    // Add free item to cart
-    addItem(
-      {
-        id: `reward-${item.id}-${Date.now()}`,
-        name: `🎁 ${item.name} (Récompense)`,
-        price: 0,
-        description: "Produit offert avec vos points fidélité",
-        image: undefined,
-        created: new Date().toISOString(),
-        updated: new Date().toISOString(),
-      },
-      [],
-      1
-    );
+    addRewardItem(item.name, item.category, requiredPoints);
 
     setIsRedeeming(false);
 
-    // Show success and go back
     Alert.alert(
       "🎉 Récompense ajoutée !",
       `${item.name} a été ajouté à votre panier gratuitement.`,
@@ -175,7 +157,6 @@ export function RedeemScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      {/* Header */}
       <View className="bg-primary px-4 pt-12 pb-6">
         <Pressable onPress={() => router.back()} className="mb-4">
           <Text className="text-primary-foreground text-lg font-medium">
@@ -196,7 +177,6 @@ export function RedeemScreen() {
         </View>
       </View>
 
-      {/* Points info */}
       <View className="px-4 py-4 bg-white border-b border-gray-200">
         <View className="flex-row items-center justify-between">
           <View>
@@ -221,7 +201,6 @@ export function RedeemScreen() {
         )}
       </View>
 
-      {/* Items grid */}
       <ScrollView className="flex-1 px-4 py-4">
         <Text className="text-gray-500 text-sm mb-4 uppercase tracking-wider">
           Sélectionne un produit
@@ -269,7 +248,6 @@ export function RedeemScreen() {
         })}
       </ScrollView>
 
-      {/* Bottom CTA */}
       <View className="px-4 py-4 bg-white border-t border-gray-200">
         <Pressable
           onPress={handleRedeem}

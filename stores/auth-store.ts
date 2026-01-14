@@ -14,11 +14,12 @@ interface AuthStore {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  
+
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
   checkAuth: () => void;
+  refreshUser: () => Promise<void>;
   addPoints: (points: number) => Promise<void>;
 }
 
@@ -39,10 +40,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   login: async (email, password) => {
     try {
-      const authData = await pb.collection("users").authWithPassword(email, password);
-      set({ 
-        user: mapRecordToUser(authData.record), 
-        isAuthenticated: true 
+      const authData = await pb
+        .collection("users")
+        .authWithPassword(email, password);
+      set({
+        user: mapRecordToUser(authData.record),
+        isAuthenticated: true,
       });
     } catch (error) {
       throw error;
@@ -71,20 +74,32 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   checkAuth: () => {
     if (pb.authStore.isValid && pb.authStore.model) {
-      set({ 
-        user: mapRecordToUser(pb.authStore.model), 
+      set({
+        user: mapRecordToUser(pb.authStore.model),
         isAuthenticated: true,
-        isLoading: false 
+        isLoading: false,
       });
     } else {
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },
 
+  refreshUser: async () => {
+    const { user } = get();
+    if (!user) return;
+
+    try {
+      const record = await pb.collection("users").getOne(user.id);
+      set({ user: mapRecordToUser(record) });
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+    }
+  },
+
   addPoints: async (points) => {
     const { user } = get();
     if (!user) return;
-    
+
     const newPoints = user.points + points;
     await pb.collection("users").update(user.id, { points: newPoints });
     set({ user: { ...user, points: newPoints } });

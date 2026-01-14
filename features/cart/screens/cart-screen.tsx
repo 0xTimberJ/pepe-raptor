@@ -33,45 +33,73 @@ function CartItemRow({
     onRemove();
   };
 
+  const isReward = item.isReward;
+
   return (
-    <View className="flex-row bg-white rounded-xl p-3 mb-3 border border-gray-100">
-      {item.product.image && (
+    <View
+      className={`flex-row rounded-xl p-3 mb-3 border ${
+        isReward ? "bg-green-50 border-green-200" : "bg-white border-gray-100"
+      }`}
+    >
+      {item.product.image ? (
         <Image
           source={{ uri: getImageUrl(item.product, item.product.image) }}
           style={{ width: 70, height: 70, borderRadius: 8 }}
           contentFit="cover"
         />
-      )}
+      ) : isReward ? (
+        <View
+          style={{ width: 70, height: 70, borderRadius: 8 }}
+          className="bg-green-100 items-center justify-center"
+        >
+          <Text className="text-3xl">🎁</Text>
+        </View>
+      ) : null}
       <View className="flex-1 ml-3">
-        <Text className="font-semibold text-gray-900">{item.product.name}</Text>
+        <Text
+          className={`font-semibold ${isReward ? "text-green-800" : "text-gray-900"}`}
+        >
+          {item.product.name}
+        </Text>
         {item.extras.length > 0 && (
           <Text className="text-xs text-gray-500">
             + {item.extras.map((e) => e.name).join(", ")}
           </Text>
         )}
-        <Text className="text-sm text-blue-600 font-semibold mt-1">
-          {item.unitPrice.toFixed(2)} €
+        {item.product.description && isReward && (
+          <Text className="text-xs text-green-600 mt-0.5">
+            {item.product.description}
+          </Text>
+        )}
+        <Text
+          className={`text-sm font-semibold mt-1 ${
+            isReward ? "text-green-600" : "text-primary"
+          }`}
+        >
+          {isReward ? "GRATUIT" : `${item.unitPrice.toFixed(2)} €`}
         </Text>
       </View>
       <View className="items-center justify-center">
-        <View className="flex-row items-center gap-2">
-          <Pressable
-            onPress={() => handleQuantityChange(item.quantity - 1)}
-            className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center"
-          >
-            <Text className="text-lg font-bold text-gray-600">−</Text>
-          </Pressable>
-          <Text className="text-base font-semibold w-6 text-center">
-            {item.quantity}
-          </Text>
-          <Pressable
-            onPress={() => handleQuantityChange(item.quantity + 1)}
-            className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center"
-          >
-            <Text className="text-lg font-bold text-gray-600">+</Text>
-          </Pressable>
-        </View>
-        <Pressable onPress={handleRemove} className="mt-2">
+        {!isReward && (
+          <View className="flex-row items-center gap-2">
+            <Pressable
+              onPress={() => handleQuantityChange(item.quantity - 1)}
+              className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center"
+            >
+              <Text className="text-lg font-bold text-gray-600">−</Text>
+            </Pressable>
+            <Text className="text-base font-semibold w-6 text-center">
+              {item.quantity}
+            </Text>
+            <Pressable
+              onPress={() => handleQuantityChange(item.quantity + 1)}
+              className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center"
+            >
+              <Text className="text-lg font-bold text-gray-600">+</Text>
+            </Pressable>
+          </View>
+        )}
+        <Pressable onPress={handleRemove} className={isReward ? "" : "mt-2"}>
           <Text className="text-xs text-red-500">Supprimer</Text>
         </Pressable>
       </View>
@@ -80,9 +108,21 @@ function CartItemRow({
 }
 
 export function CartScreen() {
-  const { items, removeItem, updateQuantity, getTotal } = useCartStore();
+  const {
+    items,
+    removeItem,
+    updateQuantity,
+    getTotal,
+    getPaidTotal,
+    hasOnlyRewards,
+  } = useCartStore();
   const router = useRouter();
   const total = getTotal();
+  const paidTotal = getPaidTotal();
+  const onlyRewards = hasOnlyRewards();
+
+  const paidItems = items.filter((item) => !item.isReward);
+  const rewardItems = items.filter((item) => item.isReward);
 
   if (items.length === 0) {
     return (
@@ -109,28 +149,73 @@ export function CartScreen() {
       </View>
 
       <ScrollView className="flex-1 px-4 py-4">
-        {items.map((item) => (
-          <CartItemRow
-            key={item.id}
-            item={item}
-            onRemove={() => removeItem(item.id)}
-            onUpdateQuantity={(qty) => updateQuantity(item.id, qty)}
-          />
-        ))}
+        {rewardItems.length > 0 && (
+          <View className="mb-4">
+            <Text className="text-green-700 font-semibold text-sm mb-2 uppercase tracking-wider">
+              🎁 Récompenses fidélité
+            </Text>
+            {rewardItems.map((item) => (
+              <CartItemRow
+                key={item.id}
+                item={item}
+                onRemove={() => removeItem(item.id)}
+                onUpdateQuantity={(qty) => updateQuantity(item.id, qty)}
+              />
+            ))}
+          </View>
+        )}
+
+        {paidItems.length > 0 && (
+          <View>
+            {rewardItems.length > 0 && (
+              <Text className="text-gray-500 font-semibold text-sm mb-2 uppercase tracking-wider">
+                Articles
+              </Text>
+            )}
+            {paidItems.map((item) => (
+              <CartItemRow
+                key={item.id}
+                item={item}
+                onRemove={() => removeItem(item.id)}
+                onUpdateQuantity={(qty) => updateQuantity(item.id, qty)}
+              />
+            ))}
+          </View>
+        )}
       </ScrollView>
 
       <View className="bg-white px-4 py-4 border-t border-gray-200">
+        {rewardItems.length > 0 && paidItems.length > 0 && (
+          <View className="mb-2">
+            <View className="flex-row justify-between">
+              <Text className="text-gray-500">Récompenses</Text>
+              <Text className="text-green-600 font-semibold">OFFERT</Text>
+            </View>
+            <View className="flex-row justify-between">
+              <Text className="text-gray-500">Articles</Text>
+              <Text className="text-gray-900">{paidTotal.toFixed(2)} €</Text>
+            </View>
+          </View>
+        )}
+
         <View className="flex-row justify-between mb-4">
           <Text className="text-lg font-semibold text-gray-900">Total</Text>
-          <Text className="text-xl font-bold text-blue-600">
-            {total.toFixed(2)} €
-          </Text>
+          {onlyRewards ? (
+            <Text className="text-xl font-bold text-green-600">GRATUIT 🎉</Text>
+          ) : (
+            <Text className="text-xl font-bold text-primary">
+              {paidTotal.toFixed(2)} €
+            </Text>
+          )}
         </View>
+
         <Button
           onPress={() => router.push("/checkout" as any)}
           className="w-full"
         >
-          <Text className="text-white font-semibold">Commander</Text>
+          <Text className="text-white font-semibold">
+            {onlyRewards ? "Valider ma commande" : "Commander"}
+          </Text>
         </Button>
       </View>
     </View>

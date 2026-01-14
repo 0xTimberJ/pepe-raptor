@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ScrollView, View, Pressable, Image } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
@@ -53,15 +54,20 @@ const REWARDS: RewardTier[] = [
 
 export function LoyaltyScreen() {
   const router = useRouter();
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated, logout, refreshUser } = useAuthStore();
   const userPoints = user?.points || 0;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      refreshUser();
+    }
+  }, [isAuthenticated]);
 
   const handleLogout = () => {
     logout();
     router.replace("/");
   };
 
-  // Calculate progress to next reward
   const getNextReward = () => {
     for (const reward of REWARDS) {
       if (userPoints < reward.points) {
@@ -78,7 +84,6 @@ export function LoyaltyScreen() {
 
   return (
     <ScrollView className="flex-1 bg-gray-50">
-      {/* Header */}
       <View className="bg-primary px-4 pt-12 pb-24">
         <Pressable onPress={() => router.back()} className="mb-6">
           <Text className="text-primary-foreground text-lg font-medium">
@@ -96,7 +101,6 @@ export function LoyaltyScreen() {
         </View>
       </View>
 
-      {/* Points Card - Floating */}
       <View className="px-4 -mt-16">
         <View className="bg-white rounded-2xl p-6 border border-gray-200">
           {isAuthenticated && user ? (
@@ -119,7 +123,6 @@ export function LoyaltyScreen() {
                 <Text className="text-gray-400 text-2xl ml-2 mb-2">pts</Text>
               </View>
 
-              {/* Progress bar */}
               {nextReward && (
                 <View>
                   <View className="flex-row justify-between mb-2">
@@ -161,7 +164,6 @@ export function LoyaltyScreen() {
         </View>
       </View>
 
-      {/* Rewards Section */}
       <View className="px-4 mt-8">
         <Text className="text-gray-900 text-2xl font-bold mb-2">
           🏆 Récompenses
@@ -229,7 +231,6 @@ export function LoyaltyScreen() {
                   )}
                 </View>
 
-                {/* Product images */}
                 <View className="flex-row justify-center mt-2">
                   {tier.images.slice(0, 4).map((img, index) => (
                     <Image
@@ -253,7 +254,6 @@ export function LoyaltyScreen() {
         })}
       </View>
 
-      {/* How it works */}
       <View className="px-4 mt-4 mb-8">
         <View className="bg-white rounded-2xl p-5 border border-gray-200">
           <Text className="text-gray-900 font-bold text-lg mb-4">
@@ -289,7 +289,6 @@ export function LoyaltyScreen() {
         </View>
       </View>
 
-      {/* Logout */}
       {isAuthenticated && (
         <View className="px-4 mb-8">
           <Pressable
