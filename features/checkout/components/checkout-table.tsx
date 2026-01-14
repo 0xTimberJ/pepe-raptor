@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { View, TextInput, Pressable, Modal, StyleSheet } from "react-native";
 import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
 import { CameraView, useCameraPermissions } from "expo-camera";
 
 interface CheckoutTableProps {
@@ -9,7 +8,10 @@ interface CheckoutTableProps {
   onTableChange: (value: string) => void;
 }
 
-export function CheckoutTable({ tableNumber, onTableChange }: CheckoutTableProps) {
+export function CheckoutTable({
+  tableNumber,
+  onTableChange,
+}: CheckoutTableProps) {
   const [showScanner, setShowScanner] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
 
@@ -38,7 +40,7 @@ export function CheckoutTable({ tableNumber, onTableChange }: CheckoutTableProps
       <Text className="text-lg font-semibold text-gray-900 mb-4 text-center">
         Entrez votre numero de table
       </Text>
-      
+
       <TextInput
         value={tableNumber}
         onChangeText={onTableChange}
@@ -77,11 +79,11 @@ export function CheckoutTable({ tableNumber, onTableChange }: CheckoutTableProps
                   <Text className="text-white text-lg">✕ Fermer</Text>
                 </Pressable>
               </View>
-              
+
               <View style={styles.scanArea}>
                 <View style={styles.corner} />
               </View>
-              
+
               <View style={styles.footer}>
                 <Text className="text-white text-center text-lg">
                   Scannez le QR code sur votre table

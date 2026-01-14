@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { Text, View, useWindowDimensions } from "react-native";
-import { pb } from "@/lib/pocketbase";
+import { getImageUrl } from "@/lib/image";
 import type { MenuItem } from "../types/menu-item";
 
 const PADDING = 16;
@@ -11,17 +11,12 @@ interface MenuItemCardProps {
   item: MenuItem;
 }
 
-function getImageUrl(record: MenuItem, filename: string): string {
-  return pb.files.getURL(record, filename);
-}
-
 export function MenuItemCard({ item }: MenuItemCardProps) {
   const { width: screenWidth } = useWindowDimensions();
 
   const cardWidth = (screenWidth - PADDING * 2 - GAP) / 2;
   const imageSize = cardWidth;
   const cardHeight = imageSize + CONTENT_HEIGHT;
-
 
   return (
     <View

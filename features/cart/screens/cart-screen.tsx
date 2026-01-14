@@ -4,15 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useCartStore, type CartItem } from "@/stores/cart-store";
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
-import { pb } from "@/lib/pocketbase";
+import { getImageUrl } from "@/lib/image";
 import * as Haptics from "expo-haptics";
-
-function getImageUrl(
-  record: { id: string; collectionId?: string; collectionName?: string },
-  filename: string
-): string {
-  return pb.files.getURL(record as any, filename);
-}
 
 function CartItemRow({
   item,

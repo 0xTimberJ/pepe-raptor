@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { pb } from "@/lib/pocketbase";
+import { getImageUrl } from "@/lib/image";
 import { useState, useEffect } from "react";
 import type { MenuItem } from "../types/menu-item";
 import { useExtras } from "../hooks/use-extras";
@@ -20,10 +20,6 @@ interface ItemDetailDialogProps {
   item: MenuItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-function getImageUrl(record: MenuItem, filename: string): string {
-  return pb.files.getURL(record, filename);
 }
 
 export function ItemDetailDialog({

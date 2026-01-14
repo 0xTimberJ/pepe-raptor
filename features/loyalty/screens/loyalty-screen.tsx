@@ -1,91 +1,27 @@
-import { useEffect } from "react";
 import { ScrollView, View, Pressable, Image } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "expo-router";
-import { useAuthStore } from "@/stores/auth-store";
-import * as Haptics from "expo-haptics";
-
-const IMAGES = {
-  burgers: [
-    require("@/assets/images/burgers/alley-oop.webp"),
-    require("@/assets/images/burgers/bacon-compton.webp"),
-    require("@/assets/images/burgers/dr-jack.jpeg"),
-  ],
-  desserts: [
-    require("@/assets/images/desserts/fondant-chocolat.jpeg"),
-    require("@/assets/images/desserts/tiramisu.jpeg"),
-  ],
-  frites: [require("@/assets/images/fries/fries.jpeg")],
-  drinks: [
-    require("@/assets/images/drinks/coca-cola.jpeg"),
-    require("@/assets/images/drinks/coca-zero.jpeg"),
-    require("@/assets/images/drinks/cristaline-petillante.jpeg"),
-  ],
-};
-
-interface RewardTier {
-  points: number;
-  title: string;
-  emoji: string;
-  images: any[];
-}
-
-const REWARDS: RewardTier[] = [
-  {
-    points: 25,
-    title: "Boissons",
-    emoji: "🥤",
-    images: IMAGES.drinks,
-  },
-  {
-    points: 45,
-    title: "Frites & Desserts",
-    emoji: "🍟",
-    images: [...IMAGES.frites, ...IMAGES.desserts],
-  },
-  {
-    points: 75,
-    title: "Burgers",
-    emoji: "🍔",
-    images: IMAGES.burgers,
-  },
-];
+import { useLoyalty } from "../hooks/use-loyalty";
 
 export function LoyaltyScreen() {
-  const router = useRouter();
-  const { user, isAuthenticated, logout, refreshUser } = useAuthStore();
-  const userPoints = user?.points || 0;
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      refreshUser();
-    }
-  }, [isAuthenticated]);
-
-  const handleLogout = () => {
-    logout();
-    router.replace("/");
-  };
-
-  const getNextReward = () => {
-    for (const reward of REWARDS) {
-      if (userPoints < reward.points) {
-        return reward;
-      }
-    }
-    return null;
-  };
-
-  const nextReward = getNextReward();
-  const progressPercent = nextReward
-    ? Math.min((userPoints / nextReward.points) * 100, 100)
-    : 100;
+  const {
+    user,
+    isAuthenticated,
+    userPoints,
+    nextReward,
+    progressPercent,
+    rewards,
+    canRedeemTier,
+    handleRedeemPress,
+    handleLogout,
+    navigateToAuth,
+    navigateBack,
+  } = useLoyalty();
 
   return (
     <ScrollView className="flex-1 bg-gray-50">
       <View className="bg-primary px-4 pt-12 pb-24">
-        <Pressable onPress={() => router.back()} className="mb-6">
+        <Pressable onPress={navigateBack} className="mb-6">
           <Text className="text-primary-foreground text-lg font-medium">
             ← Retour
           </Text>
@@ -156,7 +92,7 @@ export function LoyaltyScreen() {
                 Connecte-toi pour cumuler des points{"\n"}et débloquer des
                 récompenses
               </Text>
-              <Button onPress={() => router.push("/auth" as any)}>
+              <Button onPress={navigateToAuth}>
                 <Text className="text-white font-bold">Se connecter</Text>
               </Button>
             </View>
@@ -172,21 +108,14 @@ export function LoyaltyScreen() {
           Échange tes points contre des produits gratuits
         </Text>
 
-        {REWARDS.map((tier) => {
-          const canRedeem = userPoints >= tier.points;
+        {rewards.map((tier) => {
+          const canRedeem = canRedeemTier(tier);
           const isLocked = !canRedeem;
-
-          const handleRedeemPress = () => {
-            if (canRedeem) {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              router.push(`/redeem?tier=${tier.points}` as any);
-            }
-          };
 
           return (
             <Pressable
               key={tier.points}
-              onPress={handleRedeemPress}
+              onPress={() => handleRedeemPress(tier)}
               disabled={isLocked}
               className={`mb-4 rounded-2xl overflow-hidden border-2 ${
                 canRedeem

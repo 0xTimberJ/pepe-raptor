@@ -1,12 +1,8 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Image } from "expo-image";
-import { pb } from "@/lib/pocketbase";
+import { getImageUrl } from "@/lib/image";
 import type { CartItem } from "@/stores/cart-store";
-
-function getImageUrl(record: any, filename: string): string {
-  return pb.files.getURL(record, filename);
-}
 
 interface CheckoutRecapProps {
   items: CartItem[];
