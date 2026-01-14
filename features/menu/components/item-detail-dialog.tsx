@@ -14,6 +14,7 @@ import type { MenuItem } from "../types/menu-item";
 import { useExtras } from "../hooks/use-extras";
 import type { Extra } from "../api/extras";
 import { useCartStore } from "@/stores/cart-store";
+import * as Haptics from "expo-haptics";
 
 interface ItemDetailDialogProps {
   item: MenuItem | null;
@@ -71,6 +72,7 @@ export function ItemDetailDialog({
   };
 
   const handleAddToCart = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     addItem(item, selectedExtras, quantity);
     onOpenChange(false);
   };
@@ -109,8 +111,8 @@ export function ItemDetailDialog({
               <Text className="text-base font-semibold text-gray-900 mb-2">
                 Extras
               </Text>
-              <ScrollView 
-                style={{ maxHeight: 200 }} 
+              <ScrollView
+                style={{ maxHeight: 200 }}
                 showsVerticalScrollIndicator={true}
                 nestedScrollEnabled={true}
               >

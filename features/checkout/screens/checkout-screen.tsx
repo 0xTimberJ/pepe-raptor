@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cart-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useRouter } from "expo-router";
+import * as Haptics from "expo-haptics";
 
 import { CheckoutRecap } from "../components/checkout-recap";
 import { CheckoutTable } from "../components/checkout-table";
@@ -23,7 +24,7 @@ export function CheckoutScreen() {
   const router = useRouter();
   const { items, getTotal, clearCart } = useCartStore();
   const { user, isAuthenticated, addPoints } = useAuthStore();
-  
+
   const [step, setStep] = useState<CheckoutStep>("recap");
   const [tableNumber, setTableNumber] = useState("");
   const [orderNumber, setOrderNumber] = useState("");
@@ -46,25 +47,28 @@ export function CheckoutScreen() {
   const handlePayment = async () => {
     setPaymentLoading(true);
     const pointsToAdd = Math.floor(getTotal());
-    
+
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    
+
     const success = Math.random() > 0.1;
-    
+
     if (success) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
       setOrderNumber(`CMD-${Date.now().toString().slice(-6)}`);
       setEarnedPoints(pointsToAdd);
-      
+
       if (isAuthenticated && user) {
         await addPoints(pointsToAdd);
       }
-      
+
       clearCart();
       setStep("confirmation");
     } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       alert("Paiement refuse. Veuillez reessayer.");
     }
-    
+
     setPaymentLoading(false);
   };
 
@@ -125,7 +129,9 @@ export function CheckoutScreen() {
         {step === "payment" && (
           <Button onPress={handlePayment} disabled={paymentLoading}>
             <Text className="text-white font-semibold">
-              {paymentLoading ? "Paiement en cours..." : `Payer ${total.toFixed(2)} €`}
+              {paymentLoading
+                ? "Paiement en cours..."
+                : `Payer ${total.toFixed(2)} €`}
             </Text>
           </Button>
         )}
